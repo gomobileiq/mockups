@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Driving Directions — R-A — Sep 8, 2026</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body { background:#fff; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px; color:#111; max-width:680px; margin:0 auto; padding:0; }
+  .breadcrumb-bar { padding:8px 24px; font-size:12px; color:#9ca3af; border-bottom:1px solid #e5e7eb; }
+  .breadcrumb-bar a { color:#6b7280; text-decoration:none; }
+  .breadcrumb-bar a:hover { color:#1a56db; }
+  .report-wrap { padding:24px; }
+  @media print { .breadcrumb-bar { display:none; } }
+
+  /* Header */
+  .report-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:2px solid #000; padding-bottom:12px; }
+  .report-header .client { font-size:15px; font-weight:700; }
+  .report-header .meta { font-size:12px; color:#555; margin-top:2px; }
+  .report-header .print-btn { font-size:12px; color:#1a56db; text-decoration:none; cursor:pointer; border:1px solid #1a56db; border-radius:4px; padding:3px 10px; }
+  .report-header .print-btn:hover { background:#eff6ff; }
+
+  /* Map placeholder */
+  .map-box { background:#e5e7eb; border-radius:6px; height:200px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; color:#9ca3af; font-size:13px; }
+
+  /* Directions */
+  h2 { font-size:15px; font-weight:700; margin-bottom:16px; }
+
+  .stop { margin-bottom:20px; }
+  .stop-header { display:flex; gap:10px; align-items:baseline; margin-bottom:6px; }
+  .stop-num { font-size:12px; font-weight:700; background:#111; color:#fff; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .stop-name { font-weight:700; font-size:13px; }
+  .stop-address { font-size:12px; color:#555; margin-left:30px; margin-bottom:8px; }
+
+  .directions { margin-left:30px; border-left:2px solid #e5e7eb; padding-left:12px; }
+  .dir-step { font-size:12px; color:#374151; padding:2px 0; }
+
+  .next-stop { margin-left:30px; margin-top:8px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:#9ca3af; }
+
+  @media print {
+    .print-btn { display:none; }
+    body { padding:12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="breadcrumb-bar"><a href="../">← All Projects</a> · <a href="index.html">Rock Valley Culligan</a> · Driving Directions</div>
+
+<div class="report-wrap">
+<div class="report-header">
+  <div>
+    <div class="client">Rock Valley Culligan — R-A</div>
+    <div class="meta">Tuesday, September 8, 2026</div>
+  </div>
+  <a class="print-btn" onclick="window.print()">Print</a>
+</div>
+
+<!-- Map overview -->
+<div class="map-box">
+  <img src="/Users/csciora/monosnap/Monosnap 321 N Alpine Rd, Rockford, IL 6…ockford, IL 61108 - Google Maps 2026-09-04 12-57-59.png" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">
+</div>
+
+<h2>Driving Directions</h2>
+
+<!-- Depot -->
+<div class="stop">
+  <div class="stop-header">
+    <span class="stop-num" style="background:#6b7280;">⌂</span>
+    <span class="stop-name">Rock Valley Culligan — Depot</span>
+  </div>
+  <div class="stop-address">4300 Hydraulic Rd, Rockford, IL 61109</div>
+  <div class="directions">
+    <div class="dir-step">Head north on Hydraulic Rd</div>
+    <div class="dir-step">Turn right onto E State St</div>
+    <div class="dir-step">Turn left onto Bell School Rd</div>
+  </div>
+  <div class="next-stop">↓ Next stop</div>
+</div>
+
+<!-- Stop 1 -->
+<div class="stop">
+  <div class="stop-header">
+    <span class="stop-num">1</span>
+    <span class="stop-name">Ace Hardware — Rockford</span>
+  </div>
+  <div class="stop-address">4802 E State St, Rockford, IL 61108</div>
+  <div class="directions">
+    <div class="dir-step">Head south on Bell School Rd</div>
+    <div class="dir-step">Turn right onto E State St</div>
+    <div class="dir-step">Destination on left</div>
+  </div>
+  <div class="next-stop">↓ Next stop</div>
+</div>
+
+<!-- Stop 2 -->
+<div class="stop">
+  <div class="stop-header">
+    <span class="stop-num">2</span>
+    <span class="stop-name">Midway Village Museum</span>
+  </div>
+  <div class="stop-address">6799 Guilford Rd, Rockford, IL 61107</div>
+  <div class="directions">
+    <div class="dir-step">Head west on E State St</div>
+    <div class="dir-step">Turn right onto Guilford Rd</div>
+    <div class="dir-step">Destination on right</div>
+  </div>
+  <div class="next-stop">↓ Next stop</div>
+</div>
+
+<!-- Stop 3 -->
+<div class="stop">
+  <div class="stop-header">
+    <span class="stop-num">3</span>
+    <span class="stop-name">OSF Saint Anthony Medical Center</span>
+  </div>
+  <div class="stop-address">5666 E State St, Rockford, IL 61108</div>
+  <div class="directions">
+    <div class="dir-step">Continue west on Guilford Rd</div>
+    <div class="dir-step">Turn left onto N Perryville Rd</div>
+    <div class="dir-step">Turn right onto E State St</div>
+    <div class="dir-step">Destination on right</div>
+  </div>
+  <div class="next-stop">↓ Next stop</div>
+</div>
+
+<!-- Stop 4 -->
+<div class="stop">
+  <div class="stop-header">
+    <span class="stop-num">4</span>
+    <span class="stop-name">Rockford Brewing Company</span>
+  </div>
+  <div class="stop-address">514 E State St, Rockford, IL 61104</div>
+  <div class="directions">
+    <div class="dir-step">Continue west on E State St</div>
+    <div class="dir-step">Pass through downtown Rockford</div>
+    <div class="dir-step">Destination on right</div>
+  </div>
+  <div class="next-stop">↓ Next stop</div>
+</div>
+
+<!-- Stop 5 -->
+<div class="stop">
+  <div class="stop-header">
+    <span class="stop-num">5</span>
+    <span class="stop-name">Winnebago County Courthouse</span>
+  </div>
+  <div class="stop-address">400 W State St, Rockford, IL 61101</div>
+  <div class="directions">
+    <div class="dir-step">Continue west on E State St</div>
+    <div class="dir-step">Destination on left at Main St intersection</div>
+  </div>
+  <div class="next-stop">↓ Return to depot</div>
+</div>
+
+<!-- Return to depot -->
+<div class="stop">
+  <div class="stop-header">
+    <span class="stop-num" style="background:#6b7280;">⌂</span>
+    <span class="stop-name">Rock Valley Culligan — Depot</span>
+  </div>
+  <div class="stop-address">4300 Hydraulic Rd, Rockford, IL 61109</div>
+  <div class="directions">
+    <div class="dir-step">Head east on W State St</div>
+    <div class="dir-step">Turn right onto S Main St</div>
+    <div class="dir-step">Turn right onto E State St</div>
+    <div class="dir-step">Turn right onto Hydraulic Rd</div>
+    <div class="dir-step">Destination on left</div>
+  </div>
+</div>
+
+</div><!-- /report-wrap -->
+</body>
+</html>

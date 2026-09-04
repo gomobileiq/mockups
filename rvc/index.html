@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rock Valley Culligan — Route Planner</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body { background:#f5f5f5; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:14px; color:#374151; }
+
+  #pageHeader {
+    height:62px; display:flex; align-items:center; justify-content:space-between;
+    background:#fff; border-bottom:2px solid #000; box-shadow:0 3px 8px rgba(0,0,0,0.18); padding:0 20px;
+  }
+  #pageHeader .page-title { font-size:20px; font-weight:700; color:#111827; letter-spacing:-0.3px; }
+  #pageHeader .hl-link { font-size:12px; color:#6b7280; text-decoration:none; }
+  #pageHeader .hl-link:hover { color:#1a56db; text-decoration:underline; }
+  .breadcrumb-bar { background:#fff; border-bottom:1px solid #e5e7eb; padding:6px 20px; font-size:12px; color:#9ca3af; }
+  .breadcrumb-bar a { color:#6b7280; text-decoration:none; }
+  .breadcrumb-bar a:hover { color:#1a56db; }
+
+  .wrap { max-width:620px; margin:32px auto; padding:0 16px; }
+  .card { border:1px solid #e5e7eb; border-radius:8px; background:#fff; margin-bottom:16px; }
+  .card-body { padding:20px; }
+  .field-label { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:#9ca3af; margin-bottom:6px; }
+
+  /* Route rows */
+  .route-row { padding:10px 0; border-bottom:1px solid #f3f4f6; }
+  .route-row:last-child { border-bottom:none; }
+  .route-main { display:flex; align-items:center; gap:10px; }
+  .route-id { font-weight:700; font-size:14px; color:#111827; width:48px; flex-shrink:0; }
+  .route-members { flex:1; display:flex; flex-wrap:wrap; align-items:center; gap:4px; min-height:24px; }
+  .route-stops { font-size:13px; color:#6b7280; width:62px; text-align:right; flex-shrink:0; }
+  .route-actions { width:130px; text-align:right; flex-shrink:0; }
+
+  /* Member badges */
+  .member-badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; background:#dbeafe; color:#1e40af; border-radius:4px; padding:2px 6px; }
+  .member-badge .rm { color:#93c5fd; cursor:pointer; font-size:10px; }
+  .member-badge .rm:hover { color:#dc2626; }
+  .merge-btn { font-size:11px; color:#1a56db; text-decoration:none; cursor:pointer; }
+  .merge-btn:hover { text-decoration:underline; }
+
+  /* Merge picker — checklist */
+  .merge-picker { display:none; margin-top:8px; margin-left:58px; background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:10px 12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+  .merge-picker.open { display:block; }
+  .merge-picker-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:#9ca3af; margin-bottom:8px; }
+  .merge-option { display:flex; align-items:center; gap:8px; padding:3px 0; cursor:pointer; }
+  .merge-option label { font-size:12px; color:#374151; cursor:pointer; margin:0; flex:1; }
+  .merge-option label.elsewhere { color:#9ca3af; font-style:italic; }
+  .merge-option label.elsewhere::after { content:' ↩'; font-size:10px; }
+
+  /* Report links */
+  .route-link { font-size:12px; text-decoration:none; display:block; line-height:1.8; color:#1a56db; cursor:pointer; }
+  .route-link:hover { text-decoration:underline; }
+  .route-link.disabled { color:#9ca3af; pointer-events:none; cursor:default; }
+  .route-link.disabled:hover { text-decoration:none; }
+
+  .planning-overlay { display:none; text-align:center; padding:8px 0 4px; color:#6b7280; font-size:13px; }
+  .planning-overlay .spinner-border { width:1.1rem; height:1.1rem; border-width:2px; vertical-align:middle; margin-right:6px; }
+  .scenario-lock { display:none; font-size:13px; color:#16a34a; font-weight:500; margin-top:6px; }
+
+  /* Demo bar */
+  .demo-bar { background:#fef9c3; border:1px solid #fde68a; border-radius:6px; padding:10px 14px; margin-bottom:20px; font-size:12px; color:#92400e; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .demo-bar strong { margin-right:4px; }
+  .demo-btn { background:#fff; border:1px solid #d97706; border-radius:4px; padding:3px 10px; font-size:11px; color:#92400e; cursor:pointer; }
+  .demo-btn:hover { background:#fef3c7; }
+</style>
+</head>
+<body>
+
+<div class="breadcrumb-bar"><a href="../">← All Projects</a> · Rock Valley Culligan</div>
+<div id="pageHeader">
+  <div class="page-title">Rock Valley Culligan Route Planner</div>
+  <a class="hl-link" href="/dashboard">← Headlight</a>
+</div>
+
+<div class="wrap">
+
+  <div class="demo-bar">
+    <strong>Demo:</strong>
+    <button class="demo-btn" onclick="pickDate()">Pick a date</button>
+    <button class="demo-btn" onclick="doMerge()">Merge some routes</button>
+    <button class="demo-btn" onclick="runPlan()">Plan</button>
+    <button class="demo-btn" onclick="resetAll()">Reset</button>
+  </div>
+
+  <!-- Date -->
+  <div class="card">
+    <div class="card-body">
+      <div class="field-label">Delivery Date</div>
+      <input type="date" class="form-control" id="delivery-date" style="max-width:200px;" onchange="onDateChange(this.value)">
+    </div>
+  </div>
+
+  <!-- Scenario -->
+  <div class="card">
+    <div class="card-body">
+      <div class="field-label">Scenario</div>
+      <input type="text" class="form-control" id="scenario-name" style="max-width:360px;" disabled placeholder="Select a date above">
+      <div class="scenario-lock" id="scenario-lock">✓ Saved</div>
+    </div>
+  </div>
+
+  <!-- Routes -->
+  <div class="card">
+    <div class="card-body" style="padding-bottom:12px;">
+      <div class="field-label" style="margin-bottom:12px;">Routes</div>
+
+      <div class="route-row">
+        <div class="route-main">
+          <input type="checkbox" class="form-check-input" checked title="Include in Plan">
+          <div class="route-id">R-A</div>
+          <div class="route-members" id="members-ra"></div>
+          <div class="route-stops" id="stops-ra">—</div>
+          <div class="route-actions">
+            <a class="route-link" id="dir-ra" href="directions.html" target="_blank">Driving Directions</a>
+            <a class="route-link stp-link" href="#">Send to Phone</a>
+          </div>
+        </div>
+        <div class="merge-picker" id="picker-ra">
+          <div class="merge-picker-label">Merge into R-A</div>
+          <div id="options-ra"></div>
+        </div>
+      </div>
+
+      <div class="route-row">
+        <div class="route-main">
+          <input type="checkbox" class="form-check-input" checked title="Include in Plan">
+          <div class="route-id">R-B</div>
+          <div class="route-members" id="members-rb"></div>
+          <div class="route-stops" id="stops-rb">—</div>
+          <div class="route-actions">
+            <a class="route-link" id="dir-rb">Driving Directions</a>
+            <a class="route-link stp-link" href="#">Send to Phone</a>
+          </div>
+        </div>
+        <div class="merge-picker" id="picker-rb">
+          <div class="merge-picker-label">Merge into R-B</div>
+          <div id="options-rb"></div>
+        </div>
+      </div>
+
+      <div class="route-row">
+        <div class="route-main">
+          <input type="checkbox" class="form-check-input" checked title="Include in Plan">
+          <div class="route-id">R-C</div>
+          <div class="route-members" id="members-rc"></div>
+          <div class="route-stops" id="stops-rc">—</div>
+          <div class="route-actions">
+            <a class="route-link" id="dir-rc">Driving Directions</a>
+            <a class="route-link stp-link" href="#">Send to Phone</a>
+          </div>
+        </div>
+        <div class="merge-picker" id="picker-rc">
+          <div class="merge-picker-label">Merge into R-C</div>
+          <div id="options-rc"></div>
+        </div>
+      </div>
+
+      <div class="route-row">
+        <div class="route-main">
+          <input type="checkbox" class="form-check-input" checked title="Include in Plan">
+          <div class="route-id">R-RV</div>
+          <div class="route-members" id="members-rrv"></div>
+          <div class="route-stops" id="stops-rrv">—</div>
+          <div class="route-actions">
+            <a class="route-link" id="dir-rrv">Driving Directions</a>
+            <a class="route-link stp-link" href="#">Send to Phone</a>
+          </div>
+        </div>
+        <div class="merge-picker" id="picker-rrv">
+          <div class="merge-picker-label">Merge into R-RV</div>
+          <div id="options-rrv"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="btn btn-primary w-100" id="btn-plan" onclick="runPlan()" disabled>Plan</button>
+  <div class="planning-overlay" id="planning-overlay">
+    <span class="spinner-border text-primary"></span> Planning routes…
+  </div>
+
+</div>
+
+<script>
+  // Source routes only — canonical four are never shown in picker
+  var SOURCES = ['B-A','B-BB','B-C','B-F','B-N','B-RV','R-BB','R-D','R-M2','R-N','R-X'];
+  var CANONICAL = ['ra','rb','rc','rrv'];
+  var CANONICAL_ID = { ra:'R-A', rb:'R-B', rc:'R-C', rrv:'R-RV' };
+  var BASE_STOPS = { ra:47, rb:38, rc:29, rrv:21 };
+
+  var members = { ra:[], rb:[], rc:[], rrv:[] };
+  var dateSelected = false;
+
+  function ownerOf(route) {
+    for (var k of CANONICAL) {
+      if (members[k].indexOf(route) !== -1) return k;
+    }
+    return null;
+  }
+
+  function toggleSource(key, route, checked) {
+    var owner = ownerOf(route);
+    // Uncheck: remove from this route
+    if (!checked) {
+      members[key] = members[key].filter(function(r) { return r !== route; });
+    } else {
+      // Move from elsewhere if assigned, then add here
+      if (owner && owner !== key) {
+        members[owner] = members[owner].filter(function(r) { return r !== route; });
+      }
+      if (members[key].indexOf(route) === -1) members[key].push(route);
+    }
+    renderAll();
+  }
+
+  function renderMembers(key) {
+    var el = document.getElementById('members-' + key);
+    var html = '';
+    members[key].forEach(function(r) {
+      html += '<span class="member-badge">' + r +
+              ' <span class="rm" onclick="removeMember(\'' + key + '\',\'' + r + '\')">✕</span></span>';
+    });
+    html += '<a class="merge-btn" onclick="togglePicker(\'' + key + '\')">Assign Route Days</a>';
+    el.innerHTML = html;
+    renderPicker(key);
+    renderStops(key);
+  }
+
+  function renderPicker(key) {
+    var el = document.getElementById('options-' + key);
+    el.innerHTML = SOURCES.map(function(r) {
+      var owner = ownerOf(r);
+      var checked = owner === key;
+      var elsewhere = owner && owner !== key;
+      var labelClass = elsewhere ? 'elsewhere' : '';
+      var labelText = elsewhere ? r + ' (in ' + CANONICAL_ID[owner] + ')' : r;
+      return '<div class="merge-option">' +
+             '<input type="checkbox" class="form-check-input" id="chk-' + key + '-' + r.replace(/[^a-z0-9]/gi,'') + '"' +
+             (checked ? ' checked' : '') +
+             ' onchange="toggleSource(\'' + key + '\',\'' + r + '\',this.checked)">' +
+             '<label class="' + labelClass + '" for="chk-' + key + '-' + r.replace(/[^a-z0-9]/gi,'') + '">' + labelText + '</label>' +
+             '</div>';
+    }).join('');
+  }
+
+  function renderStops(key) {
+    if (!dateSelected) { document.getElementById('stops-' + key).textContent = '—'; return; }
+    var count = BASE_STOPS[key] + members[key].length * 8;
+    document.getElementById('stops-' + key).textContent = count + ' deliveries';
+  }
+
+  function renderAll() {
+    CANONICAL.forEach(function(k) { renderMembers(k); });
+  }
+
+  function togglePicker(key) {
+    CANONICAL.forEach(function(k) {
+      if (k !== key) document.getElementById('picker-' + k).classList.remove('open');
+    });
+    document.getElementById('picker-' + key).classList.toggle('open');
+  }
+
+  function removeMember(key, route) {
+    members[key] = members[key].filter(function(r) { return r !== route; });
+    renderAll();
+  }
+
+  function onDateChange(val) {
+    if (!val) { resetAll(); return; }
+    dateSelected = true;
+    var d = new Date(val + 'T00:00:00');
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    document.getElementById('scenario-name').value = 'RVC ' + val + ' ' + days[d.getDay()];
+    document.getElementById('scenario-name').disabled = false;
+    document.getElementById('btn-plan').disabled = false;
+    document.getElementById('scenario-lock').style.display = 'none';
+    document.getElementById('btn-plan').style.display = '';
+    document.getElementById('planning-overlay').style.display = 'none';
+    CANONICAL.forEach(function(k) { renderStops(k); });
+    renderAll();
+  }
+
+  function runPlan() {
+    document.getElementById('btn-plan').style.display = 'none';
+    document.getElementById('planning-overlay').style.display = 'block';
+    // Close any open pickers
+    CANONICAL.forEach(function(k) { document.getElementById('picker-' + k).classList.remove('open'); });
+    setTimeout(function() {
+      document.getElementById('planning-overlay').style.display = 'none';
+      document.getElementById('scenario-lock').style.display = 'block';
+    }, 1800);
+  }
+
+  function pickDate() {
+    document.getElementById('delivery-date').value = '2026-09-08';
+    onDateChange('2026-09-08');
+  }
+
+  function doMerge() {
+    if (!dateSelected) return;
+    members.ra = ['B-A','R-D'];
+    members.rb = ['R-BB','B-BB'];
+    members.rc = ['B-C','B-F'];
+    members.rrv = ['B-RV'];
+    renderAll();
+  }
+
+  function resetAll() {
+    dateSelected = false;
+    document.getElementById('delivery-date').value = '';
+    document.getElementById('scenario-name').value = '';
+    document.getElementById('scenario-name').disabled = true;
+    document.getElementById('scenario-name').placeholder = 'Select a date above';
+    document.getElementById('btn-plan').disabled = true;
+    document.getElementById('btn-plan').style.display = '';
+    document.getElementById('planning-overlay').style.display = 'none';
+    document.getElementById('scenario-lock').style.display = 'none';
+    CANONICAL.forEach(function(k) {
+      members[k] = [];
+      document.getElementById('picker-' + k).classList.remove('open');
+      document.getElementById('stops-' + k).textContent = '—';
+    });
+    renderAll();
+  }
+
+  resetAll();
+
+  // Send to Phone links
+  document.querySelectorAll('.stp-link').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      new bootstrap.Modal(document.getElementById('phoneModal')).show();
+    });
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.merge-picker') && !e.target.closest('.merge-btn')) {
+      CANONICAL.forEach(function(k) {
+        document.getElementById('picker-' + k).classList.remove('open');
+      });
+    }
+  });
+</script>
+<!-- Send to Phone modal -->
+<div class="modal fade" id="phoneModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 bg-transparent shadow-none">
+
+      <!-- Phone frame -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+        <div style="width:320px;background:#111;border-radius:44px;padding:14px;box-shadow:0 24px 60px rgba(0,0,0,0.5),inset 0 0 0 2px #333;">
+          <div style="height:28px;display:flex;align-items:center;justify-content:center;">
+            <div style="background:#222;width:100px;height:18px;border-radius:20px;"></div>
+          </div>
+          <div style="background:#fff;border-radius:32px;overflow:hidden;">
+
+            <div style="background:#1a56db;color:#fff;padding:12px 16px 10px;">
+              <div style="font-size:13px;font-weight:700;">R-A · Sep 8, 2026</div>
+              <div style="font-size:11px;opacity:.8;margin-top:1px;">5 stops · Tap for directions</div>
+            </div>
+
+            <div>
+
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #f3f4f6;"><div style="width:22px;height:22px;background:#6b7280;color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⌂</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111;">Depot</div><div style="font-size:11px;color:#6b7280;">4300 Hydraulic Rd</div></div><div style="color:#d1d5db;font-size:14px;">›</div></div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #f3f4f6;"><div style="width:22px;height:22px;background:#1a56db;color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111;">Ace Hardware</div><div style="font-size:11px;color:#6b7280;">4802 E State St</div></div><div style="color:#d1d5db;font-size:14px;">›</div></div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #f3f4f6;"><div style="width:22px;height:22px;background:#1a56db;color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111;">Midway Village Museum</div><div style="font-size:11px;color:#6b7280;">6799 Guilford Rd</div></div><div style="color:#d1d5db;font-size:14px;">›</div></div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #f3f4f6;"><div style="width:22px;height:22px;background:#1a56db;color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111;">OSF Saint Anthony Medical</div><div style="font-size:11px;color:#6b7280;">5666 E State St</div></div><div style="color:#d1d5db;font-size:14px;">›</div></div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #f3f4f6;"><div style="width:22px;height:22px;background:#1a56db;color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111;">Rockford Brewing Co.</div><div style="font-size:11px;color:#6b7280;">514 E State St</div></div><div style="color:#d1d5db;font-size:14px;">›</div></div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #f3f4f6;"><div style="width:22px;height:22px;background:#1a56db;color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111;">Winnebago Co. Courthouse</div><div style="font-size:11px;color:#6b7280;">400 W State St</div></div><div style="color:#d1d5db;font-size:14px;">›</div></div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;"><div style="width:22px;height:22px;background:#6b7280;color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⌂</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111;">Return to Depot</div><div style="font-size:11px;color:#6b7280;">4300 Hydraulic Rd</div></div><div style="color:#d1d5db;font-size:14px;">›</div></div>
+            </div>
+
+            <div style="height:24px;display:flex;align-items:center;justify-content:center;border-top:1px solid #f3f4f6;">
+              <div style="width:80px;height:4px;background:#111;border-radius:4px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div style="max-width:320px;text-align:center;font-size:12px;color:#e5e7eb;line-height:1.5;">
+          Send to Phone is a preview of a planned feature. Not yet active —
+          <a href="mailto:support@headlightrouteplanner.com" style="color:#fff;">contact us</a> if you'd like early access.
+        </div>
+
+        <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal" style="width:120px;">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

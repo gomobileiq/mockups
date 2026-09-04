@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Send to Phone — Mockup</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body { background:#f5f5f5; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; display:flex; justify-content:center; align-items:flex-start; padding:40px 16px; min-height:100vh; }
+
+  /* Phone frame */
+  .phone {
+    width:320px;
+    background:#111;
+    border-radius:44px;
+    padding:14px;
+    box-shadow:0 24px 60px rgba(0,0,0,0.35), inset 0 0 0 2px #333;
+  }
+  .phone-notch {
+    background:#111;
+    height:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:0;
+  }
+  .phone-notch .notch-pill {
+    background:#222;
+    width:100px;
+    height:18px;
+    border-radius:20px;
+  }
+  .phone-screen {
+    background:#fff;
+    border-radius:32px;
+    overflow:hidden;
+    min-height:580px;
+  }
+
+  /* App chrome */
+  .app-bar {
+    background:#1a56db;
+    color:#fff;
+    padding:12px 16px 10px;
+  }
+  .app-bar .app-title { font-size:13px; font-weight:700; }
+  .app-bar .app-sub { font-size:11px; opacity:.8; margin-top:1px; }
+
+  /* Stop list */
+  .stop-list { padding:0; }
+  .stop-item {
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:12px 16px;
+    border-bottom:1px solid #f3f4f6;
+    cursor:pointer;
+  }
+  .stop-item:active { background:#eff6ff; }
+  .stop-num {
+    width:22px; height:22px;
+    background:#1a56db;
+    color:#fff;
+    border-radius:50%;
+    font-size:11px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+  .stop-num.depot { background:#6b7280; }
+  .stop-info { flex:1; }
+  .stop-name { font-size:13px; font-weight:600; color:#111; }
+  .stop-addr { font-size:11px; color:#6b7280; margin-top:1px; line-height:1.4; }
+  .stop-chevron { color:#d1d5db; font-size:14px; align-self:center; }
+
+  /* Home bar */
+  .phone-home {
+    background:#fff;
+    height:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-top:1px solid #f3f4f6;
+  }
+  .home-bar { width:80px; height:4px; background:#111; border-radius:4px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="phone-notch"><div class="notch-pill"></div></div>
+  <div class="phone-screen">
+
+    <div class="app-bar">
+      <div class="app-title">R-A · Sep 8, 2026</div>
+      <div class="app-sub">5 stops · Tap for directions</div>
+    </div>
+
+    <div class="stop-list">
+
+      <div class="stop-item">
+        <div class="stop-num depot">⌂</div>
+        <div class="stop-info">
+          <div class="stop-name">Depot</div>
+          <div class="stop-addr">4300 Hydraulic Rd, Rockford</div>
+        </div>
+        <div class="stop-chevron">›</div>
+      </div>
+
+      <div class="stop-item">
+        <div class="stop-num">1</div>
+        <div class="stop-info">
+          <div class="stop-name">Ace Hardware</div>
+          <div class="stop-addr">4802 E State St, Rockford</div>
+        </div>
+        <div class="stop-chevron">›</div>
+      </div>
+
+      <div class="stop-item">
+        <div class="stop-num">2</div>
+        <div class="stop-info">
+          <div class="stop-name">Midway Village Museum</div>
+          <div class="stop-addr">6799 Guilford Rd, Rockford</div>
+        </div>
+        <div class="stop-chevron">›</div>
+      </div>
+
+      <div class="stop-item">
+        <div class="stop-num">3</div>
+        <div class="stop-info">
+          <div class="stop-name">OSF Saint Anthony Medical</div>
+          <div class="stop-addr">5666 E State St, Rockford</div>
+        </div>
+        <div class="stop-chevron">›</div>
+      </div>
+
+      <div class="stop-item">
+        <div class="stop-num">4</div>
+        <div class="stop-info">
+          <div class="stop-name">Rockford Brewing Company</div>
+          <div class="stop-addr">514 E State St, Rockford</div>
+        </div>
+        <div class="stop-chevron">›</div>
+      </div>
+
+      <div class="stop-item">
+        <div class="stop-num">5</div>
+        <div class="stop-info">
+          <div class="stop-name">Winnebago County Courthouse</div>
+          <div class="stop-addr">400 W State St, Rockford</div>
+        </div>
+        <div class="stop-chevron">›</div>
+      </div>
+
+      <div class="stop-item">
+        <div class="stop-num depot">⌂</div>
+        <div class="stop-info">
+          <div class="stop-name">Return to Depot</div>
+          <div class="stop-addr">4300 Hydraulic Rd, Rockford</div>
+        </div>
+        <div class="stop-chevron">›</div>
+      </div>
+
+    </div>
+
+    <div class="phone-home"><div class="home-bar"></div></div>
+  </div>
+</div>
+
+</body>
+</html>
